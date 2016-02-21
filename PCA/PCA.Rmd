@@ -1,0 +1,46 @@
+---
+title: "PCA"
+author: "Yan Jin"
+date: "February 21, 2016"
+output: html_document
+---
+
+### Object
+
+### Assumption
+
+### Usage
+Given $X \in R^{m \times n}$, where $m$ represents the number of variables, and $n$ is the number of observations.
+```{r}
+data("iris")                          # load data
+
+X <- t(log(iris[,1:4]))               # log transform
+m <- nrow(X)
+n <- ncol(X)
+mean <- rowMeans(X) 
+X <- X - replicate(n, mean)           # subtract mean
+```
+Apply eigenvalue decomposition to diagonalize its covariance matrix.
+$$XX^T=V\Lambda V^{-1}$$
+```{r}
+Cx <- (1/(n-1))*X %*% t(X)            # covariance matrix
+res.eig <- eigen(Cx)                  # eigenvalue decomposition
+```
+where $V$ is the loadings of PCA, the diagonals of $\Lambda$ are the variance explained. 
+```{r}
+lambda <- res.eig$values              # eigenvalues as variance explained
+V <- res.eig$vectors                  # eigenvectors as loadings
+print(lambda)
+print(V)
+```
+The principla component projection could be written as
+$$Y=V^TX$$
+After this projection, the new covariance matrix is
+$$C_Y=\frac{1}{n-1}YY^T=\frac{1}{n-1}\Lambda$$
+```{r}
+Y <- t(V) %*% X                       # produce the principal components projection
+Cy <- (1/(n-1))*Y%*%t(Y)              # check Cy and Cx
+print(Cy)
+```
+
+### Limitations
